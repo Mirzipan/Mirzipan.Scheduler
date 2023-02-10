@@ -1,0 +1,20 @@
+{
+    "name": "Mirzipan.Scheduler",
+    "rootNamespace": "",
+    "references": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "net.mirzipan.bibliotheca",
+            "expression": "1.0.0",
+            "define": "MIRZIPAN_BIBLIOTHECA"
+        }
+    ],
+    "noEngineReferences": false
+}
