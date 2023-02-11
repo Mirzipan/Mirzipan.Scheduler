@@ -1,6 +1,6 @@
 # Changelog
 
-## [1.0.0] - 2022-12-03
+## [1.0.0] - 2022-02-10
 
 ### Added
 - Scheduler for deferred updates
