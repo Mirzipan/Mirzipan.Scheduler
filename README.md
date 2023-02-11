@@ -34,11 +34,18 @@ Basic cleanup when getting rid of the scheduler.
 ### Schedule
 
 ```csharp
-ScheduleHandle Schedule(DeferredUpdate update, double dueTime, double period = 0d)
+public delegate void DeferredUpdate(double elapsedTime);
+
+IDisposable Schedule(double dueTimeInSeconds, DeferredUpdate update)
+IDisposable Schedule(double dueTimeInSeconds, double period, DeferredUpdate update)
+
+IDisposable Schedule(TimeSpan dueTime, DeferredUpdate update)
+IDisposable Schedule(TimeSpan dueTime, TimeSpan period, DeferredUpdate update)
 ```
 The specified callback will be called after `dueTime` has elapsed, but not before.
 Optionally, a `period` can be specified to make this into a recurring callback.
-The callback can be unscheduled by disposing of the `ScheduleHandle` object.
+Times can be specified either using `double` (specifies seconds) or `TimeSpan`.
+The callback can be unscheduled by disposing of the `IDisposable` object.
 
 _Notice: Callback will never be called within the same tick as it was scheduled._
 

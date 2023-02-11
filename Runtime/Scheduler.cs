@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
+using Mirzipan.Bibliotheca.Disposables;
 
 namespace Mirzipan.Scheduler
 {
@@ -33,6 +34,9 @@ namespace Mirzipan.Scheduler
             _smearUpdates = (options & Options.SmearUpdates) != 0;
         }
 
+        /// <summary>
+        /// Tick the scheduler. This will call scheduled updates, if their due time has come.
+        /// </summary>
         public void Tick()
         {
             _sw.Start();
@@ -43,7 +47,7 @@ namespace Mirzipan.Scheduler
             while (_data.Count > 0 && _tickInProgress)
             {
                 var entry = _data[0];
-                double delta = _time.Time - entry.ScheduledAt;
+                double delta = _time.Now - entry.ScheduledAt;
                 if (delta >= entry.DueTime)
                 {
                     goto EndTick;
@@ -62,7 +66,7 @@ namespace Mirzipan.Scheduler
 
                 if (Math.Abs(entry.Period) > double.Epsilon)
                 {
-                    entry.ScheduledAt = _time.Time;
+                    entry.ScheduledAt = _time.Now;
                     entry.DueTime = entry.Period;
                     _data.Add(entry);
                 }
@@ -92,15 +96,51 @@ namespace Mirzipan.Scheduler
         /// <summary>
         /// Schedule an update, optionally a repeating one.
         /// </summary>
+        /// <param name="dueTime">Time in seconds after which to call the method</param>
         /// <param name="update">Method to call</param>
+        /// <returns></returns>
+        public IDisposable Schedule(double dueTime, DeferredUpdate update)
+        {
+            var entry = new ScheduledEntry(_time.Now, Math.Max(_frameBudget, dueTime), 0d, update);
+            _data.AddOrReplace(entry);
+            return Disposable.Create(() => Unschedule(update));
+        }
+
+        /// <summary>
+        /// Schedule an update, optionally a repeating one.
+        /// </summary>
+        /// <param name="dueTime">Time in seconds after which to call the method</param>
+        /// <param name="period">Frequency (seconds) with which the method will be called.</param>
+        /// <param name="update">Method to call</param>
+        /// <returns></returns>
+        public IDisposable Schedule(double dueTime, double period, DeferredUpdate update)
+        {
+            var entry = new ScheduledEntry(_time.Now, Math.Max(_frameBudget, dueTime), Math.Max(0d, period), update);
+            _data.AddOrReplace(entry);
+            return Disposable.Create(() => Unschedule(update));
+        }
+
+        /// <summary>
+        /// Schedule an update, optionally a repeating one.
+        /// </summary>
+        /// <param name="dueTime">Time after which to call the method</param>
+        /// <param name="update">Method to call</param>
+        /// <returns></returns>
+        public IDisposable Schedule(TimeSpan dueTime, DeferredUpdate update)
+        {
+            return Schedule(dueTime.TotalSeconds, update);
+        }
+
+        /// <summary>
+        /// Schedule an update, optionally a repeating one.
+        /// </summary>
         /// <param name="dueTime">Time after which to call the method</param>
         /// <param name="period">Frequency with which the method will be called.</param>
+        /// <param name="update">Method to call</param>
         /// <returns></returns>
-        public ScheduleHandle Schedule(DeferredUpdate update, double dueTime, double period = 0d)
+        public IDisposable Schedule(TimeSpan dueTime, TimeSpan period, DeferredUpdate update)
         {
-            var entry = new ScheduledEntry(_time.Time, Math.Max(_frameBudget, dueTime), period, update);
-            _data.AddOrReplace(entry);
-            return new ScheduleHandle(() => Unschedule(update));
+            return Schedule(dueTime.TotalSeconds, period.TotalSeconds, update);
         }
 
         /// <summary>

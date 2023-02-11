@@ -1,7 +1,7 @@
 {
   "name": "net.mirzipan.scheduler",
   "displayName": "Mirzipan Scheduler",
-  "version": "1.0",
+  "version": "1.0.0",
   "unity": "2021.3",
   "description": "Basic update scheduler for Unity projects",
   "author": {
@@ -18,5 +18,6 @@
 	 "utils"
   ],
   "dependencies": {
+     "net.mirzipan.bibliotheca" : "1.0.1"
   }
 }

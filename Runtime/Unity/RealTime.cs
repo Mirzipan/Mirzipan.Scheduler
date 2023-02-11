@@ -2,6 +2,6 @@
 {
     public struct RealTime : IProvideTime
     {
-        public double Time => UnityEngine.Time.realtimeSinceStartupAsDouble;
+        public double Now => UnityEngine.Time.realtimeSinceStartupAsDouble;
     }
 }

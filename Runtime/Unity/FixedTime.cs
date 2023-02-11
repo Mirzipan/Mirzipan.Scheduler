@@ -2,6 +2,6 @@
 {
     public struct FixedTime: IProvideTime
     {
-        public double Time => UnityEngine.Time.fixedUnscaledTimeAsDouble;
+        public double Now => UnityEngine.Time.fixedUnscaledTimeAsDouble;
     }
 }

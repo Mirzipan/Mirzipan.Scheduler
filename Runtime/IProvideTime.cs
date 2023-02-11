@@ -2,6 +2,6 @@
 {
     public interface IProvideTime
     {
-        public double Time { get; }
+        public double Now { get; }
     }
 }
