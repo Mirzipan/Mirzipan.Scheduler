@@ -1,3 +1,5 @@
+[![openupm](https://img.shields.io/npm/v/net.mirzipan.scheduler?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/net.mirzipan.scheduler/) ![GitHub](https://img.shields.io/github/license/Mirzipan/Mirzipan.Scheduler)
+
 # Mirzipan.Scheduler
 
 Simple update scheduler for Unity. Use this if you want to have better control when your updates get called and free up some performance by not having to call Update when not necessary.
