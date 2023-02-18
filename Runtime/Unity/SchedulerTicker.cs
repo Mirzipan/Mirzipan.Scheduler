@@ -22,8 +22,10 @@ namespace Mirzipan.Scheduler.Unity
 
         #region Lifecycle
 
-        private void Awake()
+        protected override void Awake()
         {
+            base.Awake();
+            
             double frameBudget = 1d / Application.targetFrameRate * _frameBudgetPercentage;
             _scheduler = new Scheduler(TimeHelper.GetTime(_time), frameBudget, _options);
         }
