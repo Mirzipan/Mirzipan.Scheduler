@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.1.1] - 2023-02-21
+
+### Fixed
+- Fixed milliseconds instead of seconds being used in scheduling
+
 ## [1.1.0] - 2023-02-21
 
 ### Added
