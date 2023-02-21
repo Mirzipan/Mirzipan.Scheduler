@@ -14,6 +14,7 @@ namespace Mirzipan.Scheduler
         /// Frame budget in milliseconds
         /// </summary>
         private long _frameBudget;
+        private double _frameBudgetInSeconds;
         /// <summary>
         /// Time when tick started in seconds
         /// </summary>
@@ -31,7 +32,8 @@ namespace Mirzipan.Scheduler
         /// <param name="options">Modification for the scheduler behaviour</param>
         public Scheduler(IProvideTime time, double frameBudget, Options options = Options.None)
         {
-            _frameBudget = (long)(frameBudget * 1000);
+            _frameBudgetInSeconds = frameBudget;
+            _frameBudget = (long)(_frameBudgetInSeconds * 1000);
             _time = time;
         }
 
@@ -68,7 +70,8 @@ namespace Mirzipan.Scheduler
         /// <param name="frameBudget"></param>
         public void SetFrameBudget(double frameBudget)
         {
-            _frameBudget = (long)frameBudget * 1000;
+            _frameBudgetInSeconds = frameBudget;
+            _frameBudget = (long)_frameBudgetInSeconds * 1000;
         }
 
         /// <summary>
@@ -79,7 +82,7 @@ namespace Mirzipan.Scheduler
         /// <returns></returns>
         public IDisposable Schedule(double dueTime, DeferredUpdate update)
         {
-            var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudget, dueTime), 0d, update);
+            var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudgetInSeconds, dueTime), 0d, update);
             _data.AddOrReplace(entry);
             return Disposable.Create(() => Unschedule(update));
         }
@@ -93,7 +96,7 @@ namespace Mirzipan.Scheduler
         /// <returns></returns>
         public IDisposable Schedule(double dueTime, double period, DeferredUpdate update)
         {
-            var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudget, dueTime), Math.Max(0d, period), update);
+            var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudgetInSeconds, dueTime), Math.Max(0d, period), update);
             _data.AddOrReplace(entry);
             return Disposable.Create(() => Unschedule(update));
         }
