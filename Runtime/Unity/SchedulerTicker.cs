@@ -12,7 +12,7 @@ namespace Mirzipan.Scheduler.Unity
         [SerializeField]
         private TickerTime _time;
         [SerializeField]
-        private Options _options = Options.SmearUpdates;
+        private Options _options = Options.None;
         [SerializeField]
         [Range(0, 1)]
         [Tooltip("How much of the frame may be used up by the scheduler. 0 - none, 1 - whole frame")]
@@ -26,7 +26,7 @@ namespace Mirzipan.Scheduler.Unity
         {
             base.Awake();
             
-            double frameBudget = 1d / Application.targetFrameRate * _frameBudgetPercentage;
+            double frameBudget = 1d / Mathf.Max(Application.targetFrameRate, 30) * _frameBudgetPercentage;
             _scheduler = new Scheduler(TimeHelper.GetTime(_time), frameBudget, _options);
         }
 
@@ -76,7 +76,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(TimeSpan dueTime, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime, update);
+            return _scheduler.Schedule(dueTime.TotalSeconds, update);
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(TimeSpan dueTime, TimeSpan period, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime, period, update);
+            return _scheduler.Schedule(dueTime.TotalSeconds, period.TotalSeconds, update);
         }
 
         /// <summary>

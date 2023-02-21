@@ -6,6 +6,5 @@ namespace Mirzipan.Scheduler
     public enum Options
     {
         None = 0,
-        SmearUpdates = 1 << 0,
     }
 }
