@@ -33,6 +33,13 @@ void Dispose()
 ```
 Basic cleanup when getting rid of the scheduler.
 
+### SetFrameBudget
+
+```csharp
+void SetFrameBudget(double frameBudget)
+```
+Sets the new frame budget. Useful when changing target framerate of the application during runtime.
+
 ### Schedule
 
 ```csharp
@@ -40,9 +47,6 @@ public delegate void DeferredUpdate(double elapsedTime);
 
 IDisposable Schedule(double dueTimeInSeconds, DeferredUpdate update)
 IDisposable Schedule(double dueTimeInSeconds, double period, DeferredUpdate update)
-
-IDisposable Schedule(TimeSpan dueTime, DeferredUpdate update)
-IDisposable Schedule(TimeSpan dueTime, TimeSpan period, DeferredUpdate update)
 ```
 The specified callback will be called after `dueTime` has elapsed, but not before.
 Optionally, a `period` can be specified to make this into a recurring callback.

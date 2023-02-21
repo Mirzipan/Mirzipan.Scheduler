@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.1.0] - 2023-02-21
+
+### Added
+- SetFrameBudget method to change the frame budget on the fly
+
+### Removed
+- Schedule methods with TimeSpan (they are useful, but they are better suited for wrappers)
+- Option to smear updates over frames is no longer available, it is the default behaviour
+
+### Changed
+- Scheduling and ticking logic has been tweaked a little, partially to get rid of the goto
+
 ## [1.0.1] - 2023-02-18
 
 ### Fixed
