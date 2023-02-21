@@ -11,7 +11,7 @@ The basic idea is that whatever callback you schedule, the only guarantee is tha
 ### Constructor
 
 ```csharp
-Scheduler(IProvideTime time, double frameBudget, Options options = Options.SmearUpdates)
+Scheduler(IProvideTime time, double frameBudget, Options options = Options.None)
 ```
 `time` - provider of time for scheduling purposes
 
@@ -68,6 +68,4 @@ All scheduled updated will be unscheduled.
 
 ## Options
 
-### SmearUpdates
-
-If the `Tick` is taking longer than the allowed `frameBudget`, the current `Tick` will end all further eligible updates will be moved to the following invoke of `Tick`.
+None so far
