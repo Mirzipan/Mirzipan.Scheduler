@@ -10,15 +10,12 @@ namespace Mirzipan.Scheduler.Unity
     public class SchedulerTicker: Singleton<SchedulerTicker>
     {
         [SerializeField]
-        private TickerTime _time;
-        [SerializeField]
-        private Options _options = Options.None;
-        [SerializeField]
         [Range(0, 1)]
         [Tooltip("How much of the frame may be used up by the scheduler. 0 - none, 1 - whole frame")]
         private double _frameBudgetPercentage = 0.8d;
 
-        private Scheduler _scheduler;
+        private Ticker _ticker;
+        private Updater _updater;
 
         #region Lifecycle
 
@@ -26,24 +23,49 @@ namespace Mirzipan.Scheduler.Unity
         {
             base.Awake();
             
+            _ticker = new Ticker();
+            
             double frameBudget = 1d / Mathf.Max(Application.targetFrameRate, 30) * _frameBudgetPercentage;
-            _scheduler = new Scheduler(TimeHelper.GetTime(_time), frameBudget, _options);
+            _updater = new Updater(frameBudget);
         }
 
         private void FixedUpdate()
         {
-            _scheduler.Tick();
+            _ticker.Tick();
+            _updater.Tick(Time.fixedUnscaledTimeAsDouble);
         }
 
         private void OnDestroy()
         {
-            _scheduler?.Dispose();
-            _scheduler = null;
+            _ticker?.Dispose();
+            _ticker = null;
+            
+            _updater?.Dispose();
+            _updater = null;
         }
 
         #endregion Lifecycle
 
         #region Public
+
+        /// <summary>
+        /// Add an update that will be called each tick.
+        /// </summary>
+        /// <param name="update"></param>
+        /// <returns></returns>
+        public IDisposable AddUpdate(TickUpdate update)
+        {
+            return _ticker?.Add(update);
+        }
+
+        /// <summary>
+        /// Remove an update that was called each tick.
+        /// </summary>
+        /// <param name="update"></param>
+        public void RemoveUpdate(TickUpdate update)
+        {
+            _ticker?.Remove(update);
+        }
 
         /// <summary>
         /// Schedule an update, optionally a repeating one.
@@ -53,7 +75,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(double dueTime, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime, update);
+            return _updater?.Schedule(dueTime, update);
         }
 
         /// <summary>
@@ -65,7 +87,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(double dueTime, double period, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime, period, update);
+            return _updater?.Schedule(dueTime, period, update);
         }
 
         /// <summary>
@@ -76,7 +98,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(TimeSpan dueTime, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime.TotalSeconds, update);
+            return _updater?.Schedule(dueTime.TotalSeconds, update);
         }
 
         /// <summary>
@@ -88,7 +110,7 @@ namespace Mirzipan.Scheduler.Unity
         /// <returns></returns>
         public IDisposable Schedule(TimeSpan dueTime, TimeSpan period, DeferredUpdate update)
         {
-            return _scheduler.Schedule(dueTime.TotalSeconds, period.TotalSeconds, update);
+            return _updater?.Schedule(dueTime.TotalSeconds, period.TotalSeconds, update);
         }
 
         /// <summary>
@@ -97,15 +119,47 @@ namespace Mirzipan.Scheduler.Unity
         /// <param name="update">Method to unschedule</param>
         public void Unschedule(DeferredUpdate update)
         {
-            _scheduler.Unschedule(update);
+            _updater?.Unschedule(update);
         }
 
         /// <summary>
         /// Unschedule all currently scheduled updates.
         /// </summary>
-        public void Clear()
+        public void ClearUpdater()
         {
-            _scheduler.Clear();
+            _updater?.Clear();
+        }
+
+        /// <summary>
+        /// Add a tick update.
+        /// </summary>
+        public IDisposable AddTick(TickUpdate update)
+        {
+            return _ticker?.Add(update, 0);
+        }
+
+        /// <summary>
+        /// Add a tick update with priority.
+        /// </summary>
+        public IDisposable AddTick(TickUpdate update, int priority)
+        {
+            return _ticker?.Add(update, priority);
+        }
+
+        /// <summary>
+        /// Remove a tick update.
+        /// </summary>
+        public void RemoveTick(TickUpdate update)
+        {
+            _ticker?.Remove(update);
+        }
+
+        /// <summary>
+        /// Unschedule all currently scheduled ticks.
+        /// </summary>
+        public void ClearTicker()
+        {
+            _ticker?.Clear();
         }
 
         #endregion Public

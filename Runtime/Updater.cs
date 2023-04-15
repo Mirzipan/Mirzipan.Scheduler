@@ -4,11 +4,10 @@ using Mirzipan.Bibliotheca.Disposables;
 
 namespace Mirzipan.Scheduler
 {
-    public class Scheduler : IDisposable
+    public class Updater : IDisposable
     {
-        private readonly SortableSet<ScheduledEntry> _data = new(32, ScheduledEntryComparer.Comparer);
+        private readonly SortableSet<ScheduledEntry> _data = new(32, ScheduledEqualityComparer.Comparer);
         private readonly Stopwatch _sw = new();
-        private readonly IProvideTime _time;
 
         /// <summary>
         /// Frame budget in milliseconds
@@ -27,20 +26,17 @@ namespace Mirzipan.Scheduler
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="time">Time used for scheduling</param>
         /// <param name="frameBudget">Maximum amount of time in seconds to spend on a single Tick</param>
-        /// <param name="options">Modification for the scheduler behaviour</param>
-        public Scheduler(IProvideTime time, double frameBudget, Options options = Options.None)
+        public Updater(double frameBudget)
         {
             _frameBudgetInSeconds = frameBudget;
             _frameBudget = (long)(_frameBudgetInSeconds * 1000);
-            _time = time;
         }
 
         /// <summary>
         /// Tick the scheduler. This will call scheduled updates, if their due time has come.
         /// </summary>
-        public void Tick()
+        public void Tick(double time)
         {
             if (_tickInProgress)
             {
@@ -49,7 +45,7 @@ namespace Mirzipan.Scheduler
             }
 
             _tickInProgress = true;
-            _tickStartedAt = _time.Now;
+            _tickStartedAt = time;
             TickDeferredUpdates();
             _tickInProgress = false;
         }
@@ -84,7 +80,7 @@ namespace Mirzipan.Scheduler
         {
             var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudgetInSeconds, dueTime), 0d, update);
             _data.AddOrReplace(entry);
-            return Disposable.Create(() => Unschedule(update));
+            return Disposable.Create(() => Remove(entry));
         }
 
         /// <summary>
@@ -98,7 +94,7 @@ namespace Mirzipan.Scheduler
         {
             var entry = new ScheduledEntry(_tickStartedAt, Math.Max(_frameBudgetInSeconds, dueTime), Math.Max(0d, period), update);
             _data.AddOrReplace(entry);
-            return Disposable.Create(() => Unschedule(update));
+            return Disposable.Create(() => Remove(entry));
         }
 
         /// <summary>

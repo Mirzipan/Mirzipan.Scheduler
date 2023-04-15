@@ -2,9 +2,9 @@
 
 namespace Mirzipan.Scheduler
 {
-    internal class ScheduledEntryComparer: IEqualityComparer<ScheduledEntry>
+    internal class ScheduledEqualityComparer: IEqualityComparer<ScheduledEntry>
     {
-        public static readonly ScheduledEntryComparer Comparer = new();
+        public static readonly ScheduledEqualityComparer Comparer = new();
         
         public bool Equals(ScheduledEntry x, ScheduledEntry y)
         {
