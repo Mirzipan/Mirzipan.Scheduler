@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.2.0] - 2023-04-15
+
+### Added
+- Ticker with registered updates called each frame
+
+### Changed
+- Scheduler is now called Updater
+- removed IProvideTime and Options from Updater constructor
+- Tick method on Updater now takes time as parameter
+
+### Removed
+- Options
+
 ## [1.1.1] - 2023-02-21
 
 ### Fixed

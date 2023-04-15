@@ -4,26 +4,24 @@
 
 Simple update scheduler for Unity. Use this if you want to have better control when your updates get called and free up some performance by not having to call Update when not necessary.
 
-## Scheduler
+## Updater
 
 The basic idea is that whatever callback you schedule, the only guarantee is that the callback will not be called before its due time. There is, however, no guarantee that it will be called precisely when scheduled.
 
 ### Constructor
 
 ```csharp
-Scheduler(IProvideTime time, double frameBudget, Options options = Options.None)
+Scheduler(double frameBudget)
 ```
-`time` - provider of time for scheduling purposes
-
 `frameBudget` - the maximum amount of time per one invoke of the `Tick` method
-
-`options` - options which modify the behaviour of scheduler
 
 ### Tick
 
 ```csharp
-void Tick()
+void Tick(double time)
 ```
+`time` - game time according to which scheduled updates should be invoked.
+
 Starts calling scheduled updates until it exceeds the `frameBudget` specified within constructor.
 
 ### Dispose
@@ -66,6 +64,20 @@ The specified callback will be unregistered from scheduled updates.
 
 All scheduled updated will be unscheduled.
 
-## Options
+## Ticker
+Calls registered updates each tick, regardless of time.
 
-None so far
+### Add
+```csharp
+IDisposable Add(TickUpdate update)
+IDisposable Add(TickUpdate update, int priority)
+```
+`priority` - priority with which the update is to be called (higher means sooner).
+
+Adds the specified callback to the list of updates to be called during a tick. 
+
+### Remove
+```csharp
+bool Remove(TickUpdate update)
+```
+Removes the specified callback from the list of updates to be called during a tick. 
